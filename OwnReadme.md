@@ -1,18 +1,22 @@
-Flask is a lightweight web framework for building web applications in Python. It is designed to be simple and easy to use.Flask follows the model-view-controller (MVC) architectural pattern, although it is flexible enough to be used in other architectural styles as well. It provides a way to handle HTTP requests and responses, routing URLs to appropriate functions, rendering templates, and managing sessions.
+**Flask is a lightweight web framework for building web applications in Python. It is designed to be simple and easy to use.Flask follows the model-view-controller (MVC) architectural pattern, although it is flexible enough to be used in other architectural styles as well. It provides a way to handle HTTP requests and responses, routing URLs to appropriate functions, rendering templates, and managing sessions.**
 
-**from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify
+
 from flask_pymongo import PyMongo
 
 from bson.objectid import ObjectId
 
 import socket
-**
 
-This is import section. Imports the necessary modules and dependencies for the application. The Flask module is used to create the Flask application, while request is used to handle HTTP requests. jsonify is used to convert Python objects into JSON responses. Flask_PyMongo is an extension that integrates MongoDB with Flask, allowing easy interaction with the database. ObjectId is used to convert string identifiers to MongoDB ObjectIds. Finally, the socket module is imported to retrieve the hostname of the current machine.
 
-**app = Flask(__name__)
+**This is import section. Imports the necessary modules and dependencies for the application. The Flask module is used to create the Flask application, while request is used to handle HTTP requests. jsonify is used to convert Python objects into JSON responses. Flask_PyMongo is an extension that integrates MongoDB with Flask, allowing easy interaction with the database. ObjectId is used to convert string identifiers to MongoDB ObjectIds. Finally, the socket module is imported to retrieve the hostname of the current machine.**
+
+app = Flask(__name__)
+
 app.config["MONGO_URI"] = "mongodb://mongo:27017/dev"
+
 mongo = PyMongo(app)
+
 db = mongo.db**
 
 the Flask application is initialized. The Flask(__name__) line creates an instance of the Flask class, with __name__ representing the name of the current module. This instance will be the main entry point for the application.
@@ -25,26 +29,50 @@ Finally, db = mongo.db assigns the MongoDB database instance to the db variable,
 
 By configuring the MongoDB URI and initializing the PyMongo extension, the application is now ready to interact with the MongoDB database.
 
+@app.route("/")
 
- @app.route("/") decorates the index() function, which means that whenever a user accesses the root URL ("/") of the Flask application, the index() function will be invoked.
+def index():
 
-For example, if your Flask application is running on http://localhost:5000, accessing http://localhost:5000/ in a web browser will trigger the execution of the index() function.
-
-
-**@app.route("/tasks")
-def get_all_tasks():
-    tasks = db.task.find()
-    data = []
-    for task in tasks:
-        item = {
-            "id": str(task["_id"]),
-            "task": task["task"]
-        }
-        data.append(item)
+    hostname = socket.gethostname()
+    
     return jsonify(
-        data=data
+    
+        message="Welcome to Tasks app! I am running inside {} pod!".format(hostname)
+        
     )
-**
+
+
+
+
+** @app.route("/") decorates the index() function, which means that whenever a user accesses the root URL ("/") of the Flask application, the index() function will be invoked.For example, if your Flask application is running on http://localhost:5000, accessing http://localhost:5000/ in a web browser will trigger the execution of the index() function.**
+
+
+@app.route("/tasks")
+
+def get_all_tasks():
+
+    tasks = db.task.find()
+    
+    data = []
+    
+    for task in tasks:
+    
+        item = {
+        
+            "id": str(task["_id"]),
+            
+            "task": task["task"]
+            
+        }
+        
+        data.append(item)
+        
+    return jsonify(
+    
+        data=data
+           
+    )
+
 
 
 This line specifies that this function will handle requests to the /tasks URL route. So, when a user accesses /tasks in the Flask application, this function will be called.
@@ -60,12 +88,18 @@ The item dictionary representing each task is appended to the data list.
 Finally, jsonify(data=data) converts the data list into a JSON response. The response will contain the tasks retrieved from the database, with each task represented by its "id" and "task" properties.
 
 
-**@app.route("/task", methods=["POST"])
+@app.route("/task", methods=["POST"])
+
 def create_task():
+
     data = request.get_json(force=True)
+    
     db.task.insert_one({"task": data["task"]})
+    
     return jsonify(
+    
         message="Task saved successfully!"
+        
     )**
     
 This line specifies that this function will handle POST requests to the /task URL route. It means that when a user sends a POST request to /task, this function will be called. 
@@ -77,14 +111,22 @@ db.task.insert_one({"task": data["task"]}) inserts a new document (task) into th
 
 Finally, jsonify(message="Task saved successfully!") creates a JSON response with a success message. This message indicates that the task was successfully saved in the database.
     
-**@app.route("/task/<id>", methods=["PUT"])
+@app.route("/task/<id>", methods=["PUT"])
+ 
 def update_task(id):
+ 
     data = request.get_json(force=True)["task"]
+ 
     response = db.task.update_one({"_id": ObjectId(id)}, {"$set": {"task": data}})
+ 
     if response.matched_count:
+ 
         message = "Task updated successfully!"
+ 
     else:
+ 
         message = "No Task found!"
+ 
   **
 
   
