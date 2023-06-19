@@ -2,8 +2,11 @@ Flask is a lightweight web framework for building web applications in Python. It
 
 **from flask import Flask, request, jsonify
 from flask_pymongo import PyMongo
+
 from bson.objectid import ObjectId
-import socket**
+
+import socket
+**
 
 This is import section. Imports the necessary modules and dependencies for the application. The Flask module is used to create the Flask application, while request is used to handle HTTP requests. jsonify is used to convert Python objects into JSON responses. Flask_PyMongo is an extension that integrates MongoDB with Flask, allowing easy interaction with the database. ObjectId is used to convert string identifiers to MongoDB ObjectIds. Finally, the socket module is imported to retrieve the hostname of the current machine.
 
